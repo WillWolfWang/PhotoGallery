@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -52,6 +53,7 @@ class PhotoGalleryFragment: Fragment() {
 
         viewMode.galleryItemLiveData.observe(viewLifecycleOwner, Observer {galleryItems->
 //            Log.e("WillWolf", "response: $galleryItems")
+            rv.adapter = PhotoAdapter(galleryItems)
         })
     }
 
@@ -60,5 +62,26 @@ class PhotoGalleryFragment: Fragment() {
         fun newInstance(): PhotoGalleryFragment {
             return PhotoGalleryFragment()
         }
+    }
+
+    private class PhotoGalleryViewHolder(tvItem: TextView): RecyclerView.ViewHolder(tvItem) {
+        // 定义了一个 lamada
+        val bindTitle: (CharSequence) -> Unit = tvItem::setText
+    }
+
+    private class PhotoAdapter(private val galleryItems: List<GalleryItem>): RecyclerView.Adapter<PhotoGalleryViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoGalleryViewHolder {
+            val textView = TextView(parent.context)
+            return PhotoGalleryViewHolder(textView)
+        }
+
+        override fun getItemCount(): Int {
+            return galleryItems.size
+        }
+
+        override fun onBindViewHolder(holder: PhotoGalleryViewHolder, position: Int) {
+            holder.bindTitle(galleryItems.get(position).title)
+        }
+
     }
 }

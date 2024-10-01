@@ -33,13 +33,14 @@ class FlickrFetchr {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
+    private lateinit var flickrRequest: Call<FlickrResponse>
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
 
 
         // 调用 flickrApi.fetchContents(); 并不是执行网络请求，而是返回一个
         // 代表网络请求的 Call<String> 对象。
-        val flickrRequest: Call<FlickrResponse> = flickrApi.fetchPhotos();
+        flickrRequest = flickrApi.fetchPhotos();
 
         flickrRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
@@ -55,10 +56,25 @@ class FlickrFetchr {
             }
 
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
-                Log.e("WillWolf", "onFailure-->" + t)
+                // 可以判断 isCanceled 是不是取消了请求，导致的 onFailure
+                if (flickrRequest.isCanceled) {
+                    Log.e("WillWolf", "onFailure-->" + flickrRequest.isCanceled)
+                } else {
+                    Log.e("WillWolf", "onFailure-->" + t)
+                }
             }
         })
 
         return responseLiveData
+    }
+
+    fun cancelRequestInFlight() {
+        Log.e("WillWolf", "flickrRequest.isInitialized-->" + ::flickrRequest.isInitialized)
+        // :: 操作符是 kotlin 的反射操作符，用于获取属性或函数的引用
+        // isInitialized 是一个特殊的属性，只能用于 lateinit 修饰的变量
+        // 检查变量是否初始化
+        if (::flickrRequest.isInitialized) {
+            flickrRequest.cancel()
+        }
     }
 }
