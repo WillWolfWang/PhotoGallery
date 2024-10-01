@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/iv_show"
-    android:layout_width="100dp"
-    android:layout_height="100dp">
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_gravity="center"
+    android:scaleType="centerCrop">
 
+    <!-- ImageView 由 RecycleView 的 GridLayoutManager
+     负责管理，所以宽度会变
+
+     为最大化利用 Image View 的空间，应该设置它的 scaleType 属性
+     为 centerCrop
+     它的作用是先居中放置图片，然后放大较小图片，裁剪较大图片
+     -->
 </ImageView>

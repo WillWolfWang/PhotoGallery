@@ -1,12 +1,16 @@
 package com.will.photogallery.fragment
 
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -84,15 +88,51 @@ class PhotoGalleryFragment: Fragment() {
         }
     }
 
-    private class PhotoGalleryViewHolder(tvItem: TextView): RecyclerView.ViewHolder(tvItem) {
-        // 定义了一个 lamada
-        val bindTitle: (CharSequence) -> Unit = tvItem::setText
+    private class PhotoGalleryViewHolder(val ivItem: ImageView): RecyclerView.ViewHolder(ivItem) {
+        // 定义了一个 函数类型的变量
+        // 基本语法 val/var 变量名: (参数类型列表) -> 返回类型 = 函数体或函数引用
+        // 参数类型用括号括起来
+        // 返回类型用 -> 箭头后跟返回类型，空返回值用 Unit，可空类型使用 ?
+        // 可以指定接收者类型，格式为 接收者类型.(参数类型列表)->返回类型
+
+        // 无参，无返回值
+        val sampleAction: () -> Unit = { println("Hello") }
+        // 有参，有返回值
+        val sum : (Int, Int) -> Int = { a, b -> a + b }
+        // 可空函数类型
+        val nullableFul: ((String) -> Int)? = null
+        // 带接收者的函数类型
+        val stringOptions: String.() -> Int = {
+            // 这里的 this 是 String
+            this.length
+        }
+        // 多个参数，使用类型别名
+//        typealias TriFunction<A, B, C, R> = (A, B, C) -> R
+//        val triFunc: TriFunction<Int, String, Boolean, Double> = { a, b, c -> 1.0 }
+        val triFunc: (Int, String, Boolean) -> Double = { a, b, c -> 1.0 }
+        // 使用 lambda 表达式赋值
+        val greet: (String) -> String = {name ->
+            "hello $name"
+        }
+        // 使用函数体引用
+        fun isEvent(n: Int): Boolean {
+            return n % 2 == 0
+        }
+        val predicate: (Int) -> Boolean = ::isEvent
+
+        // 该方法就是函数体引用方式
+        val bindImage: (Drawable) -> Unit = ivItem::setImageDrawable
+        // 和下面的方法等效
+//        fun bindImage(drawable: Drawable) {
+//            ivItem.setImageDrawable(drawable)
+//        }
+
     }
 
-    private class PhotoAdapter(private val galleryItems: List<GalleryItem>): RecyclerView.Adapter<PhotoGalleryViewHolder>() {
+    private inner class PhotoAdapter(private val galleryItems: List<GalleryItem>): RecyclerView.Adapter<PhotoGalleryViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoGalleryViewHolder {
-            val textView = TextView(parent.context)
-            return PhotoGalleryViewHolder(textView)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_photo_gallery, parent, false)
+            return PhotoGalleryViewHolder(view as ImageView)
         }
 
         override fun getItemCount(): Int {
@@ -100,7 +140,8 @@ class PhotoGalleryFragment: Fragment() {
         }
 
         override fun onBindViewHolder(holder: PhotoGalleryViewHolder, position: Int) {
-            holder.bindTitle(galleryItems.get(position).title)
+            val placeHolder: Drawable = ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close) ?: ColorDrawable();
+            holder.bindImage(placeHolder)
         }
 
     }
