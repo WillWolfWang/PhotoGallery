@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -27,14 +28,33 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class PhotoGalleryFragment: Fragment() {
     private lateinit var rv: RecyclerView
     private lateinit var viewMode: PhotoGalleryViewModel
+    private var isLayout = false ;
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
 
         rv = view.findViewById(R.id.rv_photoView)
         rv.apply {
-            layoutManager = GridLayoutManager(requireContext(), 3)
+//            layoutManager = GridLayoutManager(requireContext(), 3)
         }
+
+        rv.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (!isLayout) {
+                    isLayout = true
+
+                    val width = rv.width
+                    Log.e("WillWolf", "width-->" + width)
+                    val gridWidth = 360;
+                    val num = width / gridWidth
+                    rv.layoutManager = GridLayoutManager(requireContext(), num)
+                    rv.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+
+
+            }
+
+        })
 
         viewMode = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
         // 调用 flickrApi.fetchContents(); 并不是执行网络请求，而是返回一个
