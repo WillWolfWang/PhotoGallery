@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.will.photogallery.FlickrFetchr
 import com.will.photogallery.R
 import com.will.photogallery.ThumbnailDownloader
@@ -157,6 +158,9 @@ class PhotoGalleryFragment: Fragment() {
 //            ivItem.setImageDrawable(drawable)
 //        }
 
+        fun bindGalleryItem(galleryItem: GalleryItem) {
+            Glide.with(ivItem).load(galleryItem.url).placeholder( R.drawable.bill_up_close).into(ivItem)
+        }
     }
 
     private inner class PhotoAdapter(private val galleryItems: List<GalleryItem>): RecyclerView.Adapter<PhotoGalleryViewHolder>() {
@@ -170,10 +174,11 @@ class PhotoGalleryFragment: Fragment() {
         }
 
         override fun onBindViewHolder(holder: PhotoGalleryViewHolder, position: Int) {
-            val placeHolder: Drawable = ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close) ?: ColorDrawable();
-            holder.bindImage(placeHolder)
-            val galleryItem = galleryItems.get(position)
-            thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
+//            val placeHolder: Drawable = ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close) ?: ColorDrawable();
+//            holder.bindImage(placeHolder)
+//            val galleryItem = galleryItems.get(position)
+//            thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
+            holder.bindGalleryItem(galleryItems.get(position))
         }
 
     }
