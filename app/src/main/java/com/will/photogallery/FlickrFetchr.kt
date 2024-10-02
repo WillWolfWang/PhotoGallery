@@ -18,7 +18,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 /**
  * Google 推荐的仓库模式
@@ -65,11 +64,11 @@ class FlickrFetchr {
         return bitmap
     }
 
-    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+    fun searchPhotos(query: String): MutableLiveData<List<GalleryItem>> {
         return fetchPhotoMetadata(flickrApi.searchPhotos(query))
     }
 
-    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>): LiveData<List<GalleryItem>> {
+    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>): MutableLiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
 
 

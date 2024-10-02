@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -46,15 +47,32 @@ class PhotoGalleryFragment: Fragment() {
         requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.fragment_photo_gallery, menu)
+
+                val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
+                val searchView = searchItem.actionView as SearchView
+                searchView.apply {
+                    setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String): Boolean {
+                            Log.e("WillWolf", "onQueryTextSubmit-->" + query)
+                            viewMode.fetchPhotos(query)
+                            return true
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            return false
+                        }
+                    })
+
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when(menuItem.itemId) {
                     R.id.menu_item_search -> {
-
+                        Log.e("WillWolf", "onMenuItemSearch")
                     }
                     R.id.menu_item_clear -> {
-
+                        Log.e("WillWolf", "onMenuItemClear")
                     }
                 }
                 return true
