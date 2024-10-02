@@ -7,10 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +41,26 @@ class PhotoGalleryFragment: Fragment() {
             photoHolder.bindImage(drawable)
         }
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+
+//        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_photo_gallery, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when(menuItem.itemId) {
+                    R.id.menu_item_search -> {
+
+                    }
+                    R.id.menu_item_clear -> {
+
+                    }
+                }
+                return true
+            }
+
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
