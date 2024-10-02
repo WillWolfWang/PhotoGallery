@@ -23,11 +23,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.will.photogallery.R
 import com.will.photogallery.ThumbnailDownloader
 import com.will.photogallery.data.GalleryItem
 import com.will.photogallery.viewmodel.PhotoGalleryViewModel
+import com.will.photogallery.work.PollWorker
 
 class PhotoGalleryFragment: Fragment() {
     private lateinit var rv: RecyclerView
@@ -44,6 +49,10 @@ class PhotoGalleryFragment: Fragment() {
             photoHolder.bindImage(drawable)
         }
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build()
+        val workRequest = OneTimeWorkRequest.Builder(PollWorker::class.java).setConstraints(constraints).build()
+        WorkManager.getInstance().enqueue(workRequest)
 
 //        setHasOptionsMenu(true)
         requireActivity().addMenuProvider(object : MenuProvider {

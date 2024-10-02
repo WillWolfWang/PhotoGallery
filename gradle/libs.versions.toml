@@ -18,6 +18,7 @@ lifecycleExtensions = "2.2.0"
 pagingRuntime = "3.1.1"
 glide = "5.0.0-rc01"
 preferenceKtx = "1.2.1"
+workRuntime = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ androidx-lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycl
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "pagingRuntime" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+work-runtime = { group = "android.arch.work", name = "work-runtime", version.ref = "workRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

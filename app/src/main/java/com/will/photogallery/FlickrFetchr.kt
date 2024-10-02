@@ -64,6 +64,15 @@ class FlickrFetchr {
         return bitmap
     }
 
+
+    fun fetchPhotosRequest():Call<FlickrResponse> {
+        return flickrApi.fetchPhotos()
+    }
+
+    fun searchPhotosRequest(query: String): Call<FlickrResponse> {
+        return flickrApi.searchPhotos(query)
+    }
+
     fun searchPhotos(query: String): MutableLiveData<List<GalleryItem>> {
         return fetchPhotoMetadata(flickrApi.searchPhotos(query))
     }
