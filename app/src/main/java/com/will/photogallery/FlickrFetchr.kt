@@ -1,12 +1,16 @@
 package com.will.photogallery
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.will.photogallery.api.FlickrApi
 import com.will.photogallery.api.FlickrResponse
 import com.will.photogallery.api.PhotoResponse
 import com.will.photogallery.data.GalleryItem
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,6 +70,17 @@ class FlickrFetchr {
         })
 
         return responseLiveData
+    }
+
+    // 添加一个 工作 线程注解，只是提示作用
+    @WorkerThread
+    fun fetchPhoto(url: String): Bitmap? {
+        val response: Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
+        val bitmap: Bitmap? = response.body()?.byteStream()?.use {
+            BitmapFactory.decodeStream(it)
+        }
+
+        return bitmap
     }
 
     fun cancelRequestInFlight() {

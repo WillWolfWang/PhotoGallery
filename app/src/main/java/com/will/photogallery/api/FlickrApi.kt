@@ -1,7 +1,9 @@
 package com.will.photogallery.api
 
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Url
 
 interface FlickrApi {
 
@@ -15,4 +17,12 @@ interface FlickrApi {
     fun fetchPhotos():Call<FlickrResponse>// Call 的泛型参数是什么类型，Retrofit 在反序列化 Http
     // 响应数据后就会生成同样的数据类型，Retrofit 默认会把 Http 响应数据反序列化为一个
     // Okhttp.ResponseBody 对象。指定 Call<String> 就是告诉 Retrofit, 我们需要 String 对象
+
+
+    // 无参数的 GET 注解和 Url 注解
+    // 会让 Retrofit 覆盖基 URL，也就是说
+    // Retrofit 会使用传入 fetchUrlBytes 函数的
+    // URL 去联网
+     @GET
+    fun fetchUrlBytes(@Url url: String): Call<ResponseBody>
 }
