@@ -1,5 +1,6 @@
 package com.will.photogallery.fragment
 
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
@@ -55,6 +57,10 @@ class PhotoGalleryFragment: Fragment() {
                         override fun onQueryTextSubmit(query: String): Boolean {
                             Log.e("WillWolf", "onQueryTextSubmit-->" + query)
                             viewMode.fetchPhotos(query)
+
+                            // 隐藏软件盘
+                            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.hideSoftInputFromWindow(view?.windowToken, 0)
                             return true
                         }
 
