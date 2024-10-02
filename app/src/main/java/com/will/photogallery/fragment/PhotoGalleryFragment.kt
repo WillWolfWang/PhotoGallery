@@ -73,6 +73,7 @@ class PhotoGalleryFragment: Fragment() {
                     }
                     R.id.menu_item_clear -> {
                         Log.e("WillWolf", "onMenuItemClear")
+                        viewMode.fetchPhotos("")
                     }
                 }
                 return true
