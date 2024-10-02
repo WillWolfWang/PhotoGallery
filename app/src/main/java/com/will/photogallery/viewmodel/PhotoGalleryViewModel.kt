@@ -15,6 +15,9 @@ class PhotoGalleryViewModel(private val app:Application): AndroidViewModel(app) 
     var galleryItemLiveData: LiveData<List<GalleryItem>>
     val fetchr = FlickrFetchr()
     private val mutableSearchTerm = MediatorLiveData<String>()
+    // 搜索项
+    val searchTerm: String
+        get() = mutableSearchTerm.value ?: ""
     init {
         mutableSearchTerm.value = QueryPreferences.getStoredQuery(app)
 //       新版本 Transformations.map 引用不到
