@@ -1,8 +1,11 @@
 package com.will.photogallery.fragment
 
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.will.photogallery.FlickrFetchr
 import com.will.photogallery.R
+import com.will.photogallery.ThumbnailDownloader
 import com.will.photogallery.api.FlickrApi
 import com.will.photogallery.api.FlickrResponse
 import com.will.photogallery.data.GalleryItem
@@ -32,7 +36,20 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class PhotoGalleryFragment: Fragment() {
     private lateinit var rv: RecyclerView
     private lateinit var viewMode: PhotoGalleryViewModel
-    private var isLayout = false ;
+    private var isLayout = false
+    private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoGalleryViewHolder>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val responseHandler = Handler(Looper.getMainLooper())
+
+        thumbnailDownloader = ThumbnailDownloader(responseHandler){photoHolder, bitmap ->
+            val drawable = BitmapDrawable(resources, bitmap)
+            photoHolder.bindImage(drawable)
+        }
+        lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
@@ -63,8 +80,11 @@ class PhotoGalleryFragment: Fragment() {
         viewMode = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
         // 调用 flickrApi.fetchContents(); 并不是执行网络请求，而是返回一个
         // 代表网络请求的 Call<String> 对象。
+        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
 
-
+        // 保留 PhotoGalleryFragment 让它和用户看得到的 fragment 生命周期一致
+        // 配置发生变化时，fragment 不会重建
+        retainInstance = true
 
         return view
     }
@@ -79,6 +99,16 @@ class PhotoGalleryFragment: Fragment() {
 //            Log.e("WillWolf", "response: $galleryItems")
             rv.adapter = PhotoAdapter(galleryItems)
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.viewLifecycleObserver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
 
     // 伴生对象内的方法，可以使用 类.方法名 的方式调用
@@ -142,6 +172,8 @@ class PhotoGalleryFragment: Fragment() {
         override fun onBindViewHolder(holder: PhotoGalleryViewHolder, position: Int) {
             val placeHolder: Drawable = ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close) ?: ColorDrawable();
             holder.bindImage(placeHolder)
+            val galleryItem = galleryItems.get(position)
+            thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
         }
 
     }
