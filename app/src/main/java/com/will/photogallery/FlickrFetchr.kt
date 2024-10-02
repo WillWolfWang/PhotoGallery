@@ -10,6 +10,8 @@ import com.will.photogallery.api.FlickrApi
 import com.will.photogallery.api.FlickrResponse
 import com.will.photogallery.api.PhotoResponse
 import com.will.photogallery.data.GalleryItem
+import com.will.photogallery.interceptor.PhotoInterceptor
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,12 +28,17 @@ class FlickrFetchr {
     private val flickrApi: FlickrApi
 
     init {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(PhotoInterceptor())
+            .build()
+
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.flickr.com/")
             // Retrofit 默认会把网络响应数据反序列化为 OkHttp3.ResponseBody 对象
             // 要想让 Retrofit 把网络数据反序列化为 String 类型，需要指定一个
             // 数据类型转换器，比如 Square 中的 ScalarsConverterFactory
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         flickrApi = retrofit.create(FlickrApi::class.java)
@@ -39,12 +46,35 @@ class FlickrFetchr {
 
     private lateinit var flickrRequest: Call<FlickrResponse>
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
+        // 调用 flickrApi.fetchContents(); 并不是执行网络请求，而是返回一个
+        // 代表网络请求的 Call<String> 对象。
+//        flickrRequest = flickrApi.fetchPhotos();
+
+        return fetchPhotoMetadata(flickrApi.fetchPhotos())
+
+    }
+
+    // 添加一个 工作 线程注解，只是提示作用
+    @WorkerThread
+    fun fetchPhoto(url: String): Bitmap? {
+        val response: Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
+        val bitmap: Bitmap? = response.body()?.byteStream()?.use {
+            BitmapFactory.decodeStream(it)
+        }
+
+        return bitmap
+    }
+
+    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetadata(flickrApi.searchPhotos(query))
+    }
+
+    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
 
 
         // 调用 flickrApi.fetchContents(); 并不是执行网络请求，而是返回一个
         // 代表网络请求的 Call<String> 对象。
-        flickrRequest = flickrApi.fetchPhotos();
 
         flickrRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
@@ -70,17 +100,6 @@ class FlickrFetchr {
         })
 
         return responseLiveData
-    }
-
-    // 添加一个 工作 线程注解，只是提示作用
-    @WorkerThread
-    fun fetchPhoto(url: String): Bitmap? {
-        val response: Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
-        val bitmap: Bitmap? = response.body()?.byteStream()?.use {
-            BitmapFactory.decodeStream(it)
-        }
-
-        return bitmap
     }
 
     fun cancelRequestInFlight() {

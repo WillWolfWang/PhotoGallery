@@ -1,7 +1,6 @@
 package com.will.photogallery.fragment
 
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -12,27 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.will.photogallery.FlickrFetchr
 import com.will.photogallery.R
 import com.will.photogallery.ThumbnailDownloader
-import com.will.photogallery.api.FlickrApi
-import com.will.photogallery.api.FlickrResponse
 import com.will.photogallery.data.GalleryItem
 import com.will.photogallery.viewmodel.PhotoGalleryViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class PhotoGalleryFragment: Fragment() {
     private lateinit var rv: RecyclerView
@@ -83,10 +71,12 @@ class PhotoGalleryFragment: Fragment() {
         // 代表网络请求的 Call<String> 对象。
         viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
 
+        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.myViewLifecycleObserver)
         // 保留 PhotoGalleryFragment 让它和用户看得到的 fragment 生命周期一致
         // 配置发生变化时，fragment 不会重建
         retainInstance = true
 
+//        thumbnailDownloader.observeFragmentLifecycle(this)
         return view
     }
 
@@ -105,6 +95,7 @@ class PhotoGalleryFragment: Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.viewLifecycleObserver)
+        viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.myViewLifecycleObserver)
     }
 
     override fun onDestroy() {

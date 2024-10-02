@@ -5,8 +5,12 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.util.Log
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
 import java.util.concurrent.ConcurrentHashMap
 
@@ -40,6 +44,14 @@ class ThumbnailDownloader<in T : Any>(private val responseHandler: Handler, priv
         }
     }
 
+    var myViewLifecycleObserver = object : DefaultLifecycleObserver {
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            super.onDestroy(owner)
+            Log.e("WillWolf", "onDestroyView-->")
+        }
+    }
+
     val viewLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun clearQueue() {
@@ -47,6 +59,18 @@ class ThumbnailDownloader<in T : Any>(private val responseHandler: Handler, priv
             requestHandler.removeMessages(MESSAGE_DOWNLOAD)
             requestMap.clear()
         }
+    }
+
+    // 用法不对
+    fun observeFragmentLifecycle(fragment: Fragment) {
+        fragment.viewLifecycleOwnerLiveData.observe(fragment.viewLifecycleOwner, Observer { lifecycleOwner->
+            Log.e("WillWolf", "lifecycleOwner-->" + lifecycleOwner)
+            if (lifecycleOwner == null) {
+                Log.e("WillWolf", "clear all request from queue")
+                requestHandler.removeMessages(MESSAGE_DOWNLOAD)
+                requestMap.clear()
+            }
+        })
     }
 
     override fun onLooperPrepared() {
@@ -64,7 +88,7 @@ class ThumbnailDownloader<in T : Any>(private val responseHandler: Handler, priv
 
     private fun handleRequest(target: T) {
         val url = requestMap.get(target) ?: return
-        Log.e("WillWolf", "handle url: $url")
+//        Log.e("WillWolf", "handle url: $url")
         val bitmap = flickrFetchr.fetchPhoto(url) ?: return
         responseHandler.post(Runnable {
             if (requestMap[target] != url || hasQuit) {
@@ -87,7 +111,7 @@ class ThumbnailDownloader<in T : Any>(private val responseHandler: Handler, priv
 
     // T 标识具体哪次下载，url 参数是下载链接
     fun queueThumbnail(target: T, url: String) {
-        Log.e("WillWolf", "Got a URL: $url")
+//        Log.e("WillWolf", "Got a URL: $url")
         requestMap.put(target, url)
         requestHandler.obtainMessage(MESSAGE_DOWNLOAD, target).sendToTarget()
     }

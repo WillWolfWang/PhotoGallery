@@ -14,7 +14,7 @@ class PhotoGalleryViewModel: ViewModel() {
     var galleryItemLiveData: LiveData<List<GalleryItem>>
     val fetchr = FlickrFetchr()
     init {
-        galleryItemLiveData = fetchr.fetchPhotos()
+        galleryItemLiveData = fetchr.searchPhotos("planets")
     }
 
     override fun onCleared() {
