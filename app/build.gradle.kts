@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.work.runtime)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.browser)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
