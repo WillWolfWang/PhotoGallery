@@ -17,8 +17,6 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +28,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.bumptech.glide.Glide
+import com.will.photogallery.PhotoPageActivity
 import com.will.photogallery.QueryPreferences
 import com.will.photogallery.R
 import com.will.photogallery.ThumbnailDownloader
@@ -261,13 +260,13 @@ class PhotoGalleryFragment: VisibleFragment() {
 //            val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
 //            startActivity(intent)
 
-//            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
-//            startActivity(intent)
+            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
+            startActivity(intent)
 
-            CustomTabsIntent.Builder().setToolbarColor(ContextCompat.getColor(requireContext(), R.color.purple_200))
-                .setShowTitle(true)
-                .build()
-                .launchUrl(requireContext(), galleryItem.photoPageUri)
+//            CustomTabsIntent.Builder().setToolbarColor(ContextCompat.getColor(requireContext(), R.color.purple_200))
+//                .setShowTitle(true)
+//                .build()
+//                .launchUrl(requireContext(), galleryItem.photoPageUri)
         }
     }
 

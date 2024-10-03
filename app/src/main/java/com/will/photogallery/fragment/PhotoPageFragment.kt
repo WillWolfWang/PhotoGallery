@@ -9,6 +9,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.will.photogallery.R
 
@@ -19,9 +20,24 @@ class PhotoPageFragment: VisibleFragment(){
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
 
+    private lateinit var backPressedCallback: OnBackPressedCallback
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         uri = arguments?.getParcelable<Uri>(ARG_URL) ?: Uri.EMPTY
+
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    isEnabled = false
+//                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+            }
+
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onCreateView(
@@ -58,6 +74,11 @@ class PhotoPageFragment: VisibleFragment(){
         webView.webViewClient = WebViewClient()
         webView.loadUrl(uri.toString())
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        backPressedCallback.remove()
     }
 
     companion object {
