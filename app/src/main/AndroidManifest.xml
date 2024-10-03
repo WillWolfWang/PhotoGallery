@@ -6,6 +6,17 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!--定制自己的权限 protectionLevel 安全级别
+    normal 比如 android.permission.Intent 就是
+    dangerous 危险的，需要动态请求权限
+    signature 需要声明与应用一致的权限证书
+    -->
+    <permission android:name="com.will.photogallery.PRIVATE"
+        android:protectionLevel="signature"/>
+    <!--申请使用自己的权限-->
+    <uses-permission android:name="com.will.photogallery.PRIVATE"/>
+
+
     <application
         android:name=".PhotoGalleryApplication"
         android:allowBackup="true"
@@ -28,6 +39,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--让 receiver 拥有自己的权限-->
+        <receiver android:name=".receiver.NotificationReceiver"
+            android:permission="com.will.photogallery.PRIVATE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.will.photogallery.SHOW_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
