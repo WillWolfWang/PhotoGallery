@@ -1,6 +1,7 @@
 package com.will.photogallery.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -206,7 +207,7 @@ class PhotoGalleryFragment: VisibleFragment() {
         }
     }
 
-    private class PhotoGalleryViewHolder(val ivItem: ImageView): RecyclerView.ViewHolder(ivItem) {
+    private inner class PhotoGalleryViewHolder(val ivItem: ImageView): RecyclerView.ViewHolder(ivItem), View.OnClickListener {
         // 定义了一个 函数类型的变量
         // 基本语法 val/var 变量名: (参数类型列表) -> 返回类型 = 函数体或函数引用
         // 参数类型用括号括起来
@@ -245,8 +246,18 @@ class PhotoGalleryFragment: VisibleFragment() {
 //            ivItem.setImageDrawable(drawable)
 //        }
 
+        private lateinit var galleryItem: GalleryItem
+        init {
+            itemView.setOnClickListener(this)
+        }
         fun bindGalleryItem(galleryItem: GalleryItem) {
+            this.galleryItem = galleryItem
             Glide.with(ivItem).load(galleryItem.url).placeholder( R.drawable.bill_up_close).into(ivItem)
+        }
+
+        override fun onClick(v: View?) {
+            val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+            startActivity(intent)
         }
     }
 
