@@ -1,7 +1,6 @@
 package com.will.photogallery.fragment
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -29,6 +28,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.bumptech.glide.Glide
+import com.will.photogallery.PhotoPageActivity
 import com.will.photogallery.QueryPreferences
 import com.will.photogallery.R
 import com.will.photogallery.ThumbnailDownloader
@@ -112,6 +112,7 @@ class PhotoGalleryFragment: VisibleFragment() {
                         viewMode.fetchPhotos("")
                     }
                     R.id.menu_item_toggle_polling -> {
+                        Log.e("WillWolf", "onMenuItemPolling")
                         val isPolling = QueryPreferences.isPolling(requireContext())
                         if (isPolling) {
                             WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
@@ -256,7 +257,10 @@ class PhotoGalleryFragment: VisibleFragment() {
         }
 
         override fun onClick(v: View?) {
-            val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+//            val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+//            startActivity(intent)
+
+            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
             startActivity(intent)
         }
     }

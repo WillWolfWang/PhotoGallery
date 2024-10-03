@@ -39,6 +39,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".PhotoPageActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
         <!--让 receiver 拥有自己的权限-->
         <receiver android:name=".receiver.NotificationReceiver"
             android:permission="com.will.photogallery.PRIVATE"
