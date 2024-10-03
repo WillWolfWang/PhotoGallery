@@ -1,5 +1,6 @@
 package com.will.photogallery.fragment
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ abstract class VisibleFragment: Fragment() {
     private val onShowNotification = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             Toast.makeText(context, "Got a broadcast:${intent.action}", Toast.LENGTH_SHORT).show()
+            resultCode = Activity.RESULT_CANCELED
         }
     }
 

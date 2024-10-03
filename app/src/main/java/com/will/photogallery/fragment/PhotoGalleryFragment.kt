@@ -81,6 +81,10 @@ class PhotoGalleryFragment: VisibleFragment() {
                     })
 
                     setOnSearchClickListener {
+
+                        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+                        imm.showSoftInput(view, 0)
                         searchView.setQuery(viewMode.searchTerm, false)
                     }
 
